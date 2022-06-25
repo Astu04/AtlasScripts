@@ -28,10 +28,7 @@ done
 log_msg() {
 # $1 = severity
 # $2 = msg
-if [[ "$session_id" ]] ;then
     echo "$msg"
-    /system/bin/curl -s -k -L -d "$1,$2" --user "$pdauth" -H 'Content-Type: text/html' "${pdserver}/autoconfig/${session_id}/log"
-fi
 }
 
 wait_for_network(){
@@ -113,43 +110,6 @@ elif [[ -f /sdcard/magisk_update ]] ;then
     rm -f /sdcard/magisk_update
 elif [[ $(pm list packages com.topjohnwu.magisk) ]] ;then
     log_msg 4 "Magisk manager is installed and not repackaged. This should not happen. Please report it and tell us if you were installing or updating."
-fi
-}
-
-test_session(){
-[[ "$session_id" ]] || return 5
-case "$(/system/bin/curl -s -k -L -o /dev/null -w "%{http_code}" --user "$pdauth" "${pdserver}/autoconfig/${session_id}/status")" in
- 406) sleep 15 && test_session
-   ;;
- 40*) return 3
-   ;;
- 200) return 0
-   ;;
-  "") return 2
-   ;;
-   *) echo "unexpected status $(/system/bin/curl -s -k -L -o /dev/null -w "%{http_code}" --user "$pdauth" "${pdserver}/autoconfig/${session_id}/status") from madmin" && return 4
-   ;;
-esac
-}
-
-make_session(){
-until test_session ;do
-    echo "Trying to register session"
-    session_id=$(/system/bin/curl -s -k -L -X POST --user "$pdauth" "${pdserver}/autoconfig/register")
-    sleep 15
-done
-echo "$session_id" > /sdcard/reg_session
-}
-
-check_session(){
-if ! [[ -f /sdcard/reg_session ]] ;then
-    make_session
-else
-    session_id="$(cat /sdcard/reg_session)"
-    if ! test_session ;then
-        rm -f /sdcard/reg_session
-        make_session
-    fi
 fi
 }
 
