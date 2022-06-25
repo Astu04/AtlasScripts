@@ -5,7 +5,7 @@
 
 #magisk version / url
 magisk_ver="20.3"
-url_magisk="https://github.com/topjohnwu/Magisk/releases/download/v20.3/Magisk-v20.3.apk"
+url_magisk="https://github.com/topjohnwu/Magisk/releases/download/v20.3/Magisk-v20.3.zip"
 url_gapps="https://madatv.b-cdn.net/open_gapps-arm64-7.1-pico-20200715.zip"
 rgcconf="/data/data/de.grennith.rgc.remotegpscontroller/shared_prefs/de.grennith.rgc.remotegpscontroller_preferences.xml"
 pdconf="/data/data/com.mad.pogodroid/shared_prefs/com.mad.pogodroid_preferences.xml"
