@@ -67,7 +67,6 @@ cachereboot=1
 }
 
 check_magisk(){
-echo "magisk version " $
 # We'll attempt to do this a little early since apparently people get impatient
 if [[ -f /sbin/magisk ]] ;then
     echo "Setting Magisk permissions"
@@ -116,11 +115,12 @@ fi
 
 ################ start of execution
 wait_for_network
-echo "system write"
 mount -o remount,rw /system
-echo "Before check_magisk"
 check_magisk
-echo "After check_magisk"
-echo "system read"
 mount -o remount,ro /system
-# initdebug
+
+if (( "$cachereboot" )) ;then
+    msg "Rebooting into recovery mode for required installations"
+    echo '--wipe_cache' >> /cache/recovery/command
+    reboot recovery
+fi
