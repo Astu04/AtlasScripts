@@ -4,8 +4,8 @@
 # and I edited the magisk url
 
 #magisk version / url
-magisk_ver="20.3"
-url_magisk="https://github.com/topjohnwu/Magisk/releases/download/v20.3/Magisk-v20.3.zip"
+magisk_ver="21.2"
+url_magisk="https://github.com/topjohnwu/Magisk/releases/download/v21.2/Magisk-v21.2.zip"
 url_gapps="https://madatv.b-cdn.net/open_gapps-arm64-7.1-pico-20200715.zip"
 rgcconf="/data/data/de.grennith.rgc.remotegpscontroller/shared_prefs/de.grennith.rgc.remotegpscontroller_preferences.xml"
 pdconf="/data/data/com.mad.pogodroid/shared_prefs/com.mad.pogodroid_preferences.xml"
@@ -116,8 +116,8 @@ fi
 ################ start of execution
 wait_for_network
 mount -o remount,rw /system
-sed -i 's/magisk_ver=.*"/magisk_ver="20.3"/g' /etc/init.d/42mad
-sed -i 's@url_magisk=.*"@url_magisk="https://github.com/topjohnwu/Magisk/releases/download/v20.3/Magisk-v20.3.apk"@g' /etc/init.d/42mad
+sed -i 's/magisk_ver=.*"/magisk_ver="21.2"/g' /etc/init.d/42mad
+sed -i 's@url_magisk=.*"@url_magisk="https://github.com/topjohnwu/Magisk/releases/download/v21.2/Magisk-v21.2.apk"@g' /etc/init.d/42mad
 check_magisk
 mount -o remount,ro /system
 
