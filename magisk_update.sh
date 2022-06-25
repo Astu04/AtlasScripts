@@ -120,7 +120,7 @@ check_magisk
 mount -o remount,ro /system
 
 if (( "$cachereboot" )) ;then
-    msg "Rebooting into recovery mode for required installations"
+    echo "Rebooting into recovery mode for required installations"
     echo '--wipe_cache' >> /cache/recovery/command
     reboot recovery
 fi
