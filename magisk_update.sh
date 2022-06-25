@@ -6,14 +6,9 @@
 #magisk version / url
 magisk_ver="21.2"
 url_magisk="https://github.com/topjohnwu/Magisk/releases/download/v21.2/Magisk-v21.2.zip"
-url_gapps="https://madatv.b-cdn.net/open_gapps-arm64-7.1-pico-20200715.zip"
-rgcconf="/data/data/de.grennith.rgc.remotegpscontroller/shared_prefs/de.grennith.rgc.remotegpscontroller_preferences.xml"
-pdconf="/data/data/com.mad.pogodroid/shared_prefs/com.mad.pogodroid_preferences.xml"
 useragent='Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:53.0) Gecko/20100101 Firefox/53.0'
 ip="$(ifconfig 'eth0'|awk '/inet addr/{print $2}'|cut -d ':' -f 2)"
 
-requires_autoconf=1
-reboot_required=0
 cachereboot=0
 
 download(){
@@ -23,12 +18,6 @@ download(){
 until /system/bin/curl -s -k -L -A "$useragent" -o "$2" "$1" ;do
     sleep 15
 done
-}
-
-log_msg() {
-# $1 = severity
-# $2 = msg
-    echo "$msg"
 }
 
 wait_for_network(){
@@ -109,7 +98,7 @@ elif [[ -f /sdcard/magisk_update ]] ;then
     done
     rm -f /sdcard/magisk_update
 elif [[ $(pm list packages com.topjohnwu.magisk) ]] ;then
-    log_msg 4 "Magisk manager is installed and not repackaged. This should not happen. Please report it and tell us if you were installing or updating."
+    echo "Magisk manager is installed and not repackaged. This should not happen. Please report it and tell us if you were installing or updating."
 fi
 }
 
