@@ -4,8 +4,8 @@
 # and I edited the magisk url
 
 #magisk version / url
-magisk_ver="20.4"
-url_magisk="https://github.com/topjohnwu/Magisk/releases/download/v20.4/Magisk-v20.4.zip"
+magisk_ver="23.0"
+url_magisk="https://github.com/topjohnwu/Magisk/releases/download/v23.0/Magisk-v23.0.apk"
 url_gapps="https://madatv.b-cdn.net/open_gapps-arm64-7.1-pico-20200715.zip"
 rgcconf="/data/data/de.grennith.rgc.remotegpscontroller/shared_prefs/de.grennith.rgc.remotegpscontroller_preferences.xml"
 pdconf="/data/data/com.mad.pogodroid/shared_prefs/com.mad.pogodroid_preferences.xml"
@@ -116,8 +116,8 @@ fi
 ################ start of execution
 wait_for_network
 mount -o remount,rw /system
-sed -i 's/magisk_ver="20.3"/magisk_ver="20.4"/g' /etc/init.d/42mad
-sed -i 's@url_magisk="https://github.com/Map-A-Droid/MAD-ATV/raw/master/Magisk-v20.3.zip"@url_magisk="https://github.com/topjohnwu/Magisk/releases/download/v20.4/Magisk-v20.4.zip"@g' /etc/init.d/42mad
+sed -i 's/magisk_ver="20.3"/magisk_ver="23.0"/g' /etc/init.d/42mad
+sed -i 's@url_magisk="https://github.com/Map-A-Droid/MAD-ATV/raw/master/Magisk-v20.3.zip"@url_magisk="https://github.com/topjohnwu/Magisk/releases/download/v23.0/Magisk-v23.0.apk"@g' /etc/init.d/42mad
 check_magisk
 mount -o remount,ro /system
 
