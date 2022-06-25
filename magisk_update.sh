@@ -116,7 +116,11 @@ fi
 
 ################ start of execution
 wait_for_network
+echo "system write"
 mount -o remount,rw /system
+echo "Before check_magisk"
 check_magisk
+echo "After check_magisk"
+echo "system read"
 mount -o remount,ro /system
 # initdebug
