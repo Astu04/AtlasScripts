@@ -67,6 +67,7 @@ cachereboot=1
 }
 
 check_magisk(){
+echo "Test"
 # We'll attempt to do this a little early since apparently people get impatient
 if [[ -f /sbin/magisk ]] ;then
     log_msg 2 "Setting Magisk permissions"
