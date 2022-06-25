@@ -41,7 +41,7 @@ echo "Network connection detected"
 }
 
 repack_magisk(){
-log_msg 2 "Starting Magisk repackaging"
+echo "Starting Magisk repackaging"
 monkey -p com.topjohnwu.magisk 1
 sleep 30
 input tap 39 42
@@ -67,25 +67,25 @@ cachereboot=1
 }
 
 check_magisk(){
-echo "Test"
+echo "magisk version " $
 # We'll attempt to do this a little early since apparently people get impatient
 if [[ -f /sbin/magisk ]] ;then
-    log_msg 2 "Setting Magisk permissions"
+    echo "Setting Magisk permissions"
     /sbin/magiskhide --add com.nianticlabs.pokemongo
     [[ -f /sdcard/magisk.zip ]] && rm /sdcard/magisk.zip
     [[ -f /sdcard/smali.zip ]] && rm /sdcard/smali.zip
 fi
 # Install magisk.  If it already exists, check for an update
 if ! [[ -f /sbin/magisk ]] ;then
-    log_msg 2 "Preparing Magisk installation"
+    echo "Preparing Magisk installation"
     touch /sdcard/magisk_repackage
     install_magisk
 elif ! magisk -c|grep -q "$magisk_ver"; then
-    log_msg 2 "Updating Magisk"
+    echo "Updating Magisk"
     touch /sdcard/magisk_update
     install_magisk
 elif [[ -f /sdcard/magisk_repackage ]] ;then
-    log_msg 2 "Magisk repackaging required"
+    echo "Magisk repackaging required"
     # After installation the manager may not be fully installed.  Wait for it to show then repackage
     until [[ $(pm list packages com.topjohnwu.magisk) ]] ;do
         sleep 10
@@ -95,12 +95,12 @@ elif [[ -f /sdcard/magisk_repackage ]] ;then
         sleep 10
         # if repackaging didnt take place in 200 seconds, try again
         if ! (( $((r%20)) )); then
-            log_msg 2 "Attempting to repackage magisk"
+            echo "Attempting to repackage magisk"
             repack_magisk
         fi
         r=$((r+1))
     done
-    log_msg 2 "Magisk successfully repackaged"
+    echo "Magisk successfully repackaged"
     rm -f /sdcard/magisk_repackage
     sleep 10
 elif [[ -f /sdcard/magisk_update ]] ;then
