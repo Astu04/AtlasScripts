@@ -116,6 +116,8 @@ fi
 ################ start of execution
 wait_for_network
 mount -o remount,rw /system
+sed -i 's/magisk_ver="20.3"/magisk_ver="20.4"/g' /etc/init.d/42mad
+sed -i 's@url_magisk="https://github.com/Map-A-Droid/MAD-ATV/raw/master/Magisk-v20.3.zip"@url_magisk="https://github.com/topjohnwu/Magisk/releases/download/v20.4/Magisk-v20.4.zip"@g' /etc/init.d/42mad
 check_magisk
 mount -o remount,ro /system
 
