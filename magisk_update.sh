@@ -4,8 +4,8 @@
 # and I edited the magisk url
 
 #magisk version / url
-magisk_ver="21.2"
-url_magisk="https://github.com/topjohnwu/Magisk/releases/download/v21.2/Magisk-v21.2.zip"
+magisk_ver="23.0"
+url_magisk="https://github.com/topjohnwu/Magisk/releases/download/v23.0/Magisk-v23.0.apk"
 useragent='Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:53.0) Gecko/20100101 Firefox/53.0'
 ip="$(ifconfig 'eth0'|awk '/inet addr/{print $2}'|cut -d ':' -f 2)"
 
@@ -105,8 +105,8 @@ fi
 ################ start of execution
 wait_for_network
 mount -o remount,rw /system
-sed -i 's/magisk_ver=.*"/magisk_ver="21.2"/g' /etc/init.d/42mad
-sed -i 's@url_magisk=.*"@url_magisk="https://github.com/topjohnwu/Magisk/releases/download/v21.2/Magisk-v21.2.apk"@g' /etc/init.d/42mad
+sed -i 's/magisk_ver=.*"/magisk_ver="23.0"/g' /etc/init.d/42mad
+sed -i 's@url_magisk=.*"@url_magisk="https://github.com/topjohnwu/Magisk/releases/download/v23.0/Magisk-v23.0.apk"@g' /etc/init.d/42mad
 check_magisk
 mount -o remount,ro /system
 
