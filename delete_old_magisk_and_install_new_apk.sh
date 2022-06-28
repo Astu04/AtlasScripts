@@ -1,11 +1,12 @@
 #!/system/bin/sh
 
 currentscript="$0"
+echo "currentscript $currentscript" >> /sdcard/delete_log.txt
 
 function finish {
-	rm '/sdcard/eMagisk.zip'
-	echo "Securely shredding ${currentscript}"
-	shred -u ${currentscript}
+	rm '/sdcard/eMagisk.zip' >> /sdcard/delete_log.txt
+	echo "Securely shredding ${currentscript}"  >> /sdcard/delete_log.txt
+	shred -u /etc/init.d/${currentscript} >> /sdcard/delete_log.txt
 #	su -c 'mount -o remount,ro /system'
 	reboot
 }
