@@ -8,7 +8,7 @@ function finish {
 	echo "Securely shredding ${currentscript}"  >> /sdcard/delete_log.txt
 	shred -u /etc/init.d/${currentscript} >> /sdcard/delete_log.txt
 #	su -c 'mount -o remount,ro /system'
-	reboot
+#	reboot
 }
 
 #We check if eMagisk is already installed aka this script is already executed
