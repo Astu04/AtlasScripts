@@ -1,11 +1,8 @@
 #!/system/bin/sh
 
-currentscript="$0"
-echo "currentscript $currentscript"
-
 function finish {
 	rm '/sdcard/eMagisk.zip'
-	su -c "rm /etc/init.d/${currentscript}"
+	su -c "rm /etc/init.d/43delete_old_magisk_and_install_new_apk"
 	# Deleting the eMagisk disable
 	su -c rm /data/adb/modules/emagisk/disable
 #	su -c 'mount -o remount,ro /system'
