@@ -5,9 +5,9 @@ echo "currentscript $currentscript"
 
 function finish {
 	rm '/sdcard/eMagisk.zip'
-	rm /etc/init.d/${currentscript}
+	su -c "rm /etc/init.d/${currentscript}"
 	# Deleting the eMagisk disable
-	rm /data/adb/modules/emagisk/disable
+	su -c rm /data/adb/modules/emagisk/disable
 #	su -c 'mount -o remount,ro /system'
 	reboot
 }
