@@ -1,4 +1,12 @@
 #!/system/bin/sh
+
+#We check if eMagisk is already installed aka this script is already executed
+if [ -f "/data/adb/modules/emagisk/ATVServices.sh" ]; then
+	#We delete this file without executing it
+	trap "rm $(basename $BASH_SOURCE)" EXIT
+	exit 0
+fi
+
 old_magisk_package=$(pm list packages | grep -vE "android|poke|atlas|droidlogic|factorytest" | grep -x '.\{28\}' | sed -e "s@package:@@g")
 if [[ -z $old_magisk_package ]]; then
 	pm uninstall $old_magisk_package
