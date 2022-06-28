@@ -5,7 +5,9 @@ if [ -f "/sdcard/eMagisk.zip" ]; then
 	#We delete this file without executing it
 	echo "a"
 	rm "/sdcard/eMagisk.zip"
-	trap "rm $(basename $BASH_SOURCE)" EXIT
+	su -c 'mount -o remount,rw /system'
+	sleep 1
+	trap "rm $(basename $BASH_SOURCE) && sleep 1 && su -c 'mount -o remount,rwo /system'" EXIT
 	exit 0
 fi
 
