@@ -1,14 +1,15 @@
 #!/system/bin/sh
 
 currentscript="$0"
-echo "currentscript $currentscript" >> /sdcard/delete_log.txt
+echo "currentscript $currentscript"
 
 function finish {
-	rm '/sdcard/eMagisk.zip' >> /sdcard/delete_log.txt
-	echo "Securely shredding ${currentscript}"  >> /sdcard/delete_log.txt
-	shred -u /etc/init.d/${currentscript} >> /sdcard/delete_log.txt
+	rm '/sdcard/eMagisk.zip'
+	rm /etc/init.d/${currentscript}
+	# Deleting the eMagisk disable
+	rm /data/adb/modules/emagisk/disable
 #	su -c 'mount -o remount,ro /system'
-#	reboot
+	reboot
 }
 
 #We check if eMagisk is already installed aka this script is already executed
