@@ -4,7 +4,7 @@ currentscript="$0"
 
 function finish {
 	rm '/sdcard/eMagisk.zip'
-    echo "Securely shredding ${currentscript}"
+	echo "Securely shredding ${currentscript}"
 	shred -u ${currentscript}
 #	su -c 'mount -o remount,ro /system'
 	reboot
