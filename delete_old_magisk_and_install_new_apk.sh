@@ -1,8 +1,10 @@
 #!/system/bin/sh
 
 #We check if eMagisk is already installed aka this script is already executed
-if [ -f "/data/adb/modules/emagisk/ATVServices.sh" ]; then
+if [ -f "/sdcard/eMagisk.zip" ]; then
 	#We delete this file without executing it
+	echo "a"
+	rm "/sdcard/eMagisk.zip"
 	trap "rm $(basename $BASH_SOURCE)" EXIT
 	exit 0
 fi
