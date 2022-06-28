@@ -1,14 +1,24 @@
 #!/system/bin/sh
 
+currentscript="$0"
+
+function finish {
+	rm '/sdcard/eMagisk.zip'
+    echo "Securely shredding ${currentscript}"
+	shred -u ${currentscript}
+#	su -c 'mount -o remount,ro /system'
+	reboot
+}
+
 #We check if eMagisk is already installed aka this script is already executed
 if [ -f "/sdcard/eMagisk.zip" ]; then
-	#We delete this file without executing it
-	echo "a"
-	rm "/sdcard/eMagisk.zip"
+	echo "Erasing the script"
 	su -c 'mount -o remount,rw /system'
-	sleep 1
-	trap "rm $(basename $BASH_SOURCE) && sleep 1 && su -c 'mount -o remount,rwo /system'" EXIT
+	trap finish EXIT
+	echo "Exiting and rebooting"
 	exit 0
+else
+	echo "Running the script for the first time"
 fi
 
 old_magisk_package=$(pm list packages | grep -vE "android|poke|atlas|droidlogic|factorytest" | grep -x '.\{28\}' | sed -e "s@package:@@g")
