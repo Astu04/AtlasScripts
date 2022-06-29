@@ -1,6 +1,6 @@
 This comes without warranties, they are the scripts I use, they work for me and I'm sharing them. 
 
-After a clean install of the x96 mini mad rom I use one one_click.bat to install the pogo and atlas apks, update magisk to 22.1, install eMagisk and configure both atlas and eMagisk
+After a clean install of the x96 mini mad rom, I wait 11min for the mad scripts to work and then I use one one_click.bat to install the pogo and atlas apks, update magisk to 22.1, install eMagisk and configure both atlas and eMagisk
 
 
 For it to work, you need the following files in the same folder:
