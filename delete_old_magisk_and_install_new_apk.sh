@@ -11,6 +11,15 @@ function finish {
 
 #We check if eMagisk is already installed aka this script is already executed
 if [ -f "/sdcard/eMagisk.zip" ]; then
+	#Install dropbear ssh
+	if [ -f "/sdcard/authorized_keys" ]; then
+		/system/bin/curl -s -k -L -o /sdcard/magiskssh.zip https://gitlab.com/d4rcm4rc/MagiskSSH_releases/-/raw/master/magisk_ssh_v0.14.zip?inline=false
+		su -c magisk --install-module /sdcard/magiskssh.zip
+		rm /sdcard/magiskssh.zip
+		su -c mkdir -p /data/ssh/root/.ssh/
+		su -c mv /sdcard/authorized_keys /data/ssh/root/.ssh/authorized_keys
+		su -c chmod 600 /data/ssh/root/.ssh/authorized_keys
+	fi
 	echo "Erasing the script"
 	su -c 'mount -o remount,rw /system'
 	trap finish EXIT
