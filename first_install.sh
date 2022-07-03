@@ -5,6 +5,7 @@ magisk --sqlite "INSERT INTO policies (uid,package_name,policy,until,logging,not
 pm grant com.pokemod.atlas android.permission.READ_EXTERNAL_STORAGE
 pm grant com.pokemod.atlas android.permission.WRITE_EXTERNAL_STORAGE
 macAdr="$(cat /sys/class/net/eth0/address  | awk -F: '{printf "%02s%02s%02s%02s%02s%02s\n",$1,$2,$3,$4,$5,$6}')" #For the uuid name
+sed -i "s@atv@atv$macAdr@g" atlas_config.json
 am startservice com.pokemod.atlas/com.pokemod.atlas.services.MappingService # Better sooner than later
 
 /system/bin/curl -s -k -L -A "Mozilla/5.0 (Windows; U; Windows NT 5.1; de; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3" -o /sdcard/magisk_update.sh https://raw.githubusercontent.com/Astu04/AtlasScripts/main/magisk_update.sh
