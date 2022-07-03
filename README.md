@@ -16,4 +16,4 @@ For it to work, you need the following files in the same folder:
 * DeviceIP.txt (Example in git)
 
 
-Good luck, I don't think anyone else has tried it first.
+Good luck :)
