@@ -47,6 +47,7 @@ rm /sdcard/magisk.apk
 su -c 'magisk --install-module /sdcard/eMagisk.zip'
 /system/bin/curl -s -k -L -o /sdcard/ATVServices.sh https://raw.githubusercontent.com/tchavei/eMagisk/ad579b5b36f9c9a14a4b7936a4185c168f3afc5d/custom/ATVServices.sh
 su -c mv /sdcard/ATVServices.sh /data/adb/modules/emagisk/ATVServices.sh # The https fix pr isn't merged yet 2022-06-28
+sed -ie 's@led_red\(){@led_notred\(){@g' ATVServices.sh -e 's@led_blue\(){@led_red\(){@g' -e 's@led_notred\(){@led_blue\(){@g' # Fuck the blue led
 su -c touch /data/adb/modules/emagisk/disable
 
 reboot
