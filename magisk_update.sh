@@ -4,7 +4,7 @@
 # and I edited the magisk url
 
 #magisk version / url
-magisk_ver="22.1"
+magisk_ver="23.0"
 url_magisk="https://github.com/topjohnwu/Magisk/releases/download/v$magisk_ver/Magisk-v$magisk_ver.apk"
 useragent='Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:53.0) Gecko/20100101 Firefox/53.0'
 ip="$(ifconfig 'eth0'|awk '/inet addr/{print $2}'|cut -d ':' -f 2)"
