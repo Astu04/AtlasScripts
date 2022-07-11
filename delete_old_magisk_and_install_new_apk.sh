@@ -35,7 +35,7 @@ if [[ -z $old_magisk_package ]]; then
 fi
 
 #Install magisk apk
-magisk_ver="22.1"
+magisk_ver="23.0"
 url_magisk="https://github.com/topjohnwu/Magisk/releases/download/v$magisk_ver/Magisk-v$magisk_ver.apk"
 useragent='Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:53.0) Gecko/20100101 Firefox/53.0'
 /system/bin/curl -s -k -L -o /sdcard/magisk.apk $url_magisk
