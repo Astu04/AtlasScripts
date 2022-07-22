@@ -9,6 +9,10 @@ for /F "tokens=*" %%A in (DeviceIP.txt) do (
 	if exist authorized_keys (
 		adb -s %%A push authorized_keys /sdcard/authorized_keys
 	)
+	if exist 45extra (
+		adb -s %%A push 45extra.sh /sdcard/45extra.sh
+		adb -s %%A shell mv /sdcard/45extra.sh /etc/init.d/45extra
+	)
 	adb -s %%A shell "/system/bin/curl -s -k -L https://raw.githubusercontent.com/Astu04/AtlasScripts/main/first_install.sh | su -c sh"
 )
 pause
