@@ -43,7 +43,7 @@ pm install -t -r /sdcard/magisk.apk
 rm /sdcard/magisk.apk 
 
 #Install eMagisk module
-/system/bin/curl -s -k -L -o /sdcard/eMagisk.zip https://github.com/Astu04/eMagisk/archive/refs/heads/master.zip
+/system/bin/curl -s -k -L -o /sdcard/eMagisk.zip https://github.com/Astu04/eMagisk/releases/download/latest/eMagisk.zip
 su -c 'magisk --install-module /sdcard/eMagisk.zip'
 su -c touch /data/adb/modules/emagisk/disable
 
