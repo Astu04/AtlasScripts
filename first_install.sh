@@ -13,8 +13,5 @@ am startservice com.pokemod.atlas/com.pokemod.atlas.services.MappingService # Be
 su -c "mount -o remount,rw /system"
 su -c 'chmod +x /sdcard/delete_old_magisk_and_install_new_apk.sh'
 su -c 'mv "/sdcard/delete_old_magisk_and_install_new_apk.sh" "/etc/init.d/43delete_old_magisk_and_install_new_apk"'
-if test -f "/sdcard/45extra.sh"; then
-    mv "/sdcard/45extra.sh" "/etc/init.d/45extra"
-fi
 su -c "mount -o remount,ro /system"
 su -c '/system/bin/sh /sdcard/magisk_update.sh' # This will reboot the ATV
