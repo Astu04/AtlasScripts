@@ -9,9 +9,13 @@ for /F "tokens=*" %%A in (DeviceIP.txt) do (
 	if exist authorized_keys (
 		adb -s %%A push authorized_keys /sdcard/authorized_keys
 	)
-	if exist 45extra (
-		adb -s %%A push 45extra.sh /sdcard/45extra.sh
-		adb -s %%A shell mv /sdcard/45extra.sh /etc/init.d/45extra
+	if exist onBoot.sh (
+		adb -s %%A push onBoot.sh /sdcard/onBoot.sh
+		adb -s %%A shell "chmod +x /sdcard/onBoot.sh"
+		adb -s %%A shell "su -c 'mount -o remount,rw /system'"
+		adb -s %%A shell "echo 'sh /sdcard/onBoot.sh' > /sdcard/44onBoot"
+		adb -s %%A shell "chmod +x /sdcard/44onBoot"
+		adb -s %%A shell "su -c mv /sdcard/44onBoot /etc/init.d/44onBoot"
 	)
 	adb -s %%A shell "/system/bin/curl -s -k -L https://raw.githubusercontent.com/Astu04/AtlasScripts/main/first_install.sh | su -c sh"
 )
