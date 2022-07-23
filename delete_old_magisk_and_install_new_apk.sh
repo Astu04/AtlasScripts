@@ -17,8 +17,12 @@ if [ -f "/sdcard/eMagisk.zip" ]; then
 		su -c magisk --install-module /sdcard/magiskssh.zip
 		rm /sdcard/magiskssh.zip
 		su -c mkdir -p /data/ssh/root/.ssh/
-		su -c mv /sdcard/authorized_keys /data/ssh/root/.ssh/authorized_keys
+		su -c mkdir -p /data/ssh/shell/.ssh/
+		su -c cp /sdcard/authorized_keys /data/ssh/root/.ssh/authorized_keys
+		su -c mv /sdcard/authorized_keys /data/ssh/shell/.ssh/authorized_keys
 		su -c chmod 600 /data/ssh/root/.ssh/authorized_keys
+		su -c chmod 600 /data/ssh/shell/.ssh/authorized_keys
+		su -c "sed -i 's@#StrictModes yes@StrictModes no@g' /data/ssh/sshd_config"
 	fi
 	echo "Erasing the script"
 	su -c 'mount -o remount,rw /system'
