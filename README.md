@@ -5,9 +5,9 @@ After a clean install of the x96 mini mad rom with x96mini_arm64_mad_beta5.img, 
 
 For it to work, you need the following files in the same folder:
 
-* PokemodAtlas-Public-v22052602_2.apk
+* PokemodAtlas-Public-v22071801.apk
 
-* com.nianticlabs.pokemongo_0.237.0-2022050401_minAPI23(arm64-v8a)(nodpi)_apkmirror.com.apk
+* com.nianticlabs.pokemongo_0.243.0-2022070701_minAPI24(arm64-v8a)(nodpi)_apkmirror.com.apk
 
 * atlas_config.json (Example in git)
 
