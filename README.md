@@ -11,7 +11,7 @@ For it to work, you need the following files in the same folder:
 
 * atlas_config.json (Example in git)
 
-* emagisk.config (Example in git)
+* emagisk.config (Example in git, don't edit the deviceName, it should be "atv")
 
 * DeviceIP.txt (Example in git)
 
