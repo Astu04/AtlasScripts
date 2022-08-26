@@ -9,9 +9,9 @@ For it to work, you need the following files in the same folder:
 
 * com.nianticlabs.pokemongo_0.243.0-2022070701_minAPI24(arm64-v8a)(nodpi)_apkmirror.com.apk
 
-* atlas_config.json (Example in git)
+* atlas_config.json (Example in git, don't edit the deviceName, it should be "atv")
 
-* emagisk.config (Example in git, don't edit the deviceName, it should be "atv")
+* emagisk.config (Example in git)
 
 * DeviceIP.txt (Example in git)
 
