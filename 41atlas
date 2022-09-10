@@ -21,7 +21,7 @@ log_msg() {
 # $1 = severity
 # $2 = msg
 	echo "$msg" | nc 192.168.83.152 12345
-    echo "$msg" >>"/data/local/tmp/41atlas.log"
+	echo "$msg" >>"/data/local/tmp/41atlas.log"
 }
 
 execute_autoupdates(){
@@ -178,10 +178,12 @@ fi
 if [[ -z "$(pm list packages com.pokemod.atlas)" ]]; then 
     pm install -r /system/preinstall/PokemodAtlas*apk
 	rm /system/preinstall/PokemodAtlas*apk
+	log_msg 2 "Atlas installed"
 fi
 if [[ -z "$(pm list packages com.nianticlabs.pokemongo)" ]]; then 
     pm install -r /system/preinstall/com.nianticlabs.pokemongo*apk
 	rm /system/preinstall/com.nianticlabs.pokemongo*apk
+	log_msg 2 "Pogo installed"
 fi
 if [[ "$(pm list packages com.pokemod.atlas)" ]] && ! dumpsys package com.pokemod.atlas |grep READ_EXTERNAL_STORAGE|grep granted|grep -q 'granted=true'; then
 	pm grant com.pokemod.atlas android.permission.READ_EXTERNAL_STORAGE
@@ -195,7 +197,7 @@ if [[ "$(pm list packages com.nianticlabs.pokemongo)" ]] && ! dumpsys package co
 fi
 DIR="/data/adb/modules/emagisk"
 if [ ! -d "$DIR" ]; then
-  echo "${DIR} doesn't exist, installing eMagisk"
+  log_msg 2 "${DIR} doesn't exist, installing eMagisk"
   /system/bin/curl -s -k -L -o /sdcard/eMagisk.zip https://github.com/Astu04/eMagisk/releases/download/latest/eMagisk.zip
   su -c 'magisk --install-module /sdcard/eMagisk.zip' >>"/data/local/tmp/41atlas.log"
   log_msg 2 "eMagisk installed, rebooting"
@@ -213,7 +215,7 @@ su -c chmod +x /data/adb/service.d/webhook_onBoot.sh
 
 DIR="/data/adb/modules/ssh"
 if [ ! -d "$DIR" ]; then
-  echo "${DIR} doesn't exist, installing ssh magisk module"
+  log_msg 2 "${DIR} doesn't exist, installing ssh magisk module"
   /system/bin/curl -s -k -L -o /sdcard/magiskssh.zip https://gitlab.com/d4rcm4rc/MagiskSSH_releases/-/raw/master/magisk_ssh_v0.14.zip?inline=false
   su -c magisk --install-module /sdcard/magiskssh.zip >>"/data/local/tmp/41atlas.log"
   rm /sdcard/magiskssh.zip
@@ -230,6 +232,7 @@ if [ ! -d "$DIR" ]; then
   reboot
 elif [[ ! -f /data/ssh/root/.ssh/authorized_keys ]] ;then # if ssh module is installed but there are no keys
   if [[ -f /sdcard/authorized_keys ]] ;then
+	log_msg 2 "$Found /sdcard/authorized_keys, replacing it to it's proper location"
 	su -c cp /sdcard/authorized_keys /data/ssh/root/.ssh/authorized_keys
 	su -c mv /sdcard/authorized_keys /data/ssh/shell/.ssh/authorized_keys
 	su -c chmod 600 /data/ssh/root/.ssh/authorized_keys
