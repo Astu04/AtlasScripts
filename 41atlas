@@ -17,11 +17,13 @@ until /system/bin/curl -s -k -L -A "$useragent" -o "$2" "$1" ;do
 done
 }
 
+macAdr="$(cat /sys/class/net/eth0/address  | awk -F: '{printf "%02s%02s%02s%02s%02s%02s\n",$1,$2,$3,$4,$5,$6}')" #For the uuid name
+
 log_msg() {
 # $1 = severity
 # $2 = msg
-	echo "$msg" | nc 192.168.83.152 12345
-	echo "$msg" >>"/data/local/tmp/41atlas.log"
+	echo "$2" >> "/data/local/tmp/41atlas.log"
+	echo "atv${macAdr: -6}: $2" | nc 192.168.83.152 12345
 }
 
 execute_autoupdates(){
@@ -176,11 +178,13 @@ if (( "$cachereboot" )) ;then
     reboot recovery
 fi
 if [[ -z "$(pm list packages com.pokemod.atlas)" ]]; then 
+	log_msg 2 "Atlas isn't installed, starting install"
     pm install -r /system/preinstall/PokemodAtlas*apk
 	rm /system/preinstall/PokemodAtlas*apk
 	log_msg 2 "Atlas installed"
 fi
 if [[ -z "$(pm list packages com.nianticlabs.pokemongo)" ]]; then 
+	log_msg 2 "Pogo isn't installed, starting install"
     pm install -r /system/preinstall/com.nianticlabs.pokemongo*apk
 	rm /system/preinstall/com.nianticlabs.pokemongo*apk
 	log_msg 2 "Pogo installed"
@@ -246,6 +250,5 @@ execute_autoupdates
 mount -o remount,ro /system
 
 # We check the device name on the atlas config is the default one and asign a different one
-macAdr="$(cat /sys/class/net/eth0/address  | awk -F: '{printf "%02s%02s%02s%02s%02s%02s\n",$1,$2,$3,$4,$5,$6}')" #For the uuid name
 sed -i "s@\"deviceName\":\"atv\"@\"deviceName\":\"atv${macAdr: -6}\"@g" /data/local/tmp/atlas_config.json
 sed -i "s@\"deviceName\":\"dummy\"@\"deviceName\":\"atv${macAdr: -6}\"@g" /data/local/tmp/atlas_config.json
