@@ -1,0 +1,177 @@
+#magisk version / url
+magisk_ver="23.0"
+url_magisk="https://github.com/topjohnwu/Magisk/releases/download/v$magisk_ver/Magisk-v$magisk_ver.apk"
+url_gapps="https://madatv.b-cdn.net/open_gapps-arm64-7.1-pico-20200715.zip"
+useragent='Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:53.0) Gecko/20100101 Firefox/53.0'
+ip="$(ifconfig 'eth0'|awk '/inet addr/{print $2}'|cut -d ':' -f 2)"
+
+reboot_required=0
+cachereboot=0
+
+download(){
+# $1 = url
+# $2 = local path
+# lets see that curl exits successfully
+until /system/bin/curl -s -k -L -A "$useragent" -o "$2" "$1" ;do
+    sleep 15
+done
+}
+
+log_msg() {
+# $1 = severity
+# $2 = msg
+if [[ "$session_id" ]] ;then
+    echo "$msg"
+fi
+}
+
+#don't add it for execution as long as no one else is having issues with wrong language
+set_android_language() {
+if ! [[ "$(getprop persist.sys.locale)" == "en-US" ]] ;then
+ setprop persist.sys.locale en-US; setprop ctl.restart zygote
+fi
+}
+
+# set_mac(){
+# echo 1 > /sys/class/unifykeys/lock
+# echo mac > /sys/class/unifykeys/name
+# echo "$1" >/sys/class/unifykeys/write
+# cat /sys/class/unifykeys/read
+# echo 0 > /sys/class/unifykeys/lock
+# }
+
+wait_for_network(){
+echo "Waiting for network"
+until ping -c1 8.8.8.8 >/dev/null 2>/dev/null; do
+    "No network detected.  Sleeping 10s"
+    sleep 10
+done
+echo "Network connection detected"
+}
+
+repack_magisk(){
+log_msg 2 "Starting Magisk repackaging"
+monkey -p com.topjohnwu.magisk 1
+sleep 30
+input tap 39 42
+sleep 5
+input tap 150 537
+sleep 5
+input tap 315 552
+sleep 5
+input keyevent 61
+sleep 2
+input keyevent 61
+sleep 2
+input keyevent 66
+sleep 2
+}
+
+install_magisk() {
+download "$url_magisk" /sdcard/magisk.apk
+mkdir -p /cache/recovery
+touch /cache/recovery/command
+echo '--update_package=/sdcard/magisk.apk' >> /cache/recovery/command
+cachereboot=1
+}
+
+check_magisk(){
+# We'll attempt to do this a little early since apparently people get impatient
+if [[ -f /sbin/magisk ]] ;then
+    log_msg 2 "Setting Magisk permissions"
+    /sbin/magiskhide --add com.nianticlabs.pokemongo
+    [[ -f /sdcard/magisk.apk ]] && rm /sdcard/magisk.apk
+    [[ -f /sdcard/smali.zip ]] && rm /sdcard/smali.zip
+    #make sure atlas and shell have su root
+	auid="$(dumpsys package com.pokemod.atlas | grep userId | awk -F'=' '{print $2}')"
+    suid="$(id -u shell)"
+    pol="$(sqlite3 /data/adb/magisk.db "select policy from policies where package_name='com.pokemod.atlas'")"
+    if [[ "$auid" ]] && [[ "$pol" != 2 ]] ;then
+        magisk --sqlite "DELETE from policies WHERE package_name='com.pokemod.atlas'"
+		magisk --sqlite "INSERT INTO policies (uid,package_name,policy,until,logging,notification) VALUES($auid,'com.pokemod.atlas',2,0,1,0)"
+    fi
+    pol="$(sqlite3 /data/adb/magisk.db "select policy from policies where package_name='com.android.shell'")"
+    if [[ "$suid" ]] && [[ "$pol" != 2 ]] ;then
+        magisk --sqlite "DELETE from policies WHERE package_name='com.android.shell'"
+        magisk --sqlite "INSERT INTO policies (uid,package_name,policy,until,logging,notification) VALUES($suid,'com.android.shell',2,0,1,1)"
+    fi
+fi
+# Install magisk.  If it already exists, check for an update
+if ! [[ -f /sbin/magisk ]] ;then
+    log_msg 2 "Preparing Magisk installation"
+    touch /sdcard/magisk_repackage
+    install_magisk
+elif ! magisk -c|grep -q "$magisk_ver"; then
+    log_msg 2 "Updating Magisk"
+    touch /sdcard/magisk_update
+    install_magisk
+# elif [[ -f /sdcard/magisk_repackage ]] ;then
+    # log_msg 2 "Magisk repackaging required"
+    # # After installation the manager may not be fully installed.  Wait for it to show then repackage
+    # until [[ $(pm list packages com.topjohnwu.magisk) ]] ;do
+        # sleep 10
+    # done
+    # r=0
+    # while [[ $(pm list packages com.topjohnwu.magisk) ]] ;do
+        # sleep 10
+        # # if repackaging didnt take place in 200 seconds, try again
+        # if ! (( $((r%20)) )); then
+            # log_msg 2 "Attempting to repackage magisk"
+            # repack_magisk
+        # fi
+        # r=$((r+1))
+    # done
+    # log_msg 2 "Magisk successfully repackaged"
+    # rm -f /sdcard/magisk_repackage
+    # sleep 10
+elif [[ -f /sdcard/magisk_update ]] ;then
+    while [[ $(pm list packages com.topjohnwu.magisk) ]] ;do
+        pm uninstall com.topjohnwu.magisk
+        sleep 3
+    done
+    rm -f /sdcard/magisk_update
+# elif [[ $(pm list packages com.topjohnwu.magisk) ]] ;then
+    # log_msg 4 "Magisk manager is installed and not repackaged. This should not happen. Please report it and tell us if you were installing or updating."
+fi
+}
+
+################ start of execution
+sleep 20 # in case mounting /sdcard and usb takes awhile
+wait_for_network
+mount -o remount,rw /system
+check_magisk
+# Install gapps
+if [[ ! $(pm list packages android.vending) ]] ;then
+    log_msg 2 "Preparing GApps installation"
+    download "$url_gapps" /sdcard/gapps.zip
+    mkdir -p /cache/recovery
+    touch /cache/recovery/command
+    echo '--update_package=/sdcard/gapps.zip' >> /cache/recovery/command
+    cachereboot=1
+fi
+[[ -d /sdcard/TWRP ]] && rm -rf /sdcard/TWRP
+[[ $(settings get global hdmi_control_enabled) != "0" ]] && settings put global hdmi_control_enabled 0
+[[ $(settings get global stay_on_while_plugged_in) != 3 ]] && settings put global stay_on_while_plugged_in 3
+if (( "$cachereboot" )) ;then
+    log_msg "2" "Rebooting into recovery mode for required installations"
+    echo '--wipe_cache' >> /cache/recovery/command
+    reboot recovery
+fi
+if [[ "$(pm list packages com.pokemod.atlas)" ]] && ! dumpsys package com.pokemod.atlas |grep READ_EXTERNAL_STORAGE|grep granted|grep -q 'granted=true'; then
+	pm grant com.pokemod.atlas android.permission.READ_EXTERNAL_STORAGE
+	pm grant com.pokemod.atlas android.permission.WRITE_EXTERNAL_STORAGE
+fi
+if [[ "$(pm list packages com.nianticlabs.pokemongo)" ]] && ! dumpsys package com.nianticlabs.pokemongo|grep ACCESS_FINE_LOCATION|grep granted|grep -q 'granted=true'; then
+    pm grant com.nianticlabs.pokemongo android.permission.ACCESS_FINE_LOCATION
+    pm grant com.nianticlabs.pokemongo android.permission.ACCESS_COARSE_LOCATION
+    pm grant com.nianticlabs.pokemongo android.permission.CAMERA
+    pm grant com.nianticlabs.pokemongo android.permission.GET_ACCOUNTS
+fi
+
+execute_autoupdates
+mount -o remount,ro /system
+
+# We check the device name on the atlas config is the default one and asign a different one
+macAdr="$(cat /sys/class/net/eth0/address  | awk -F: '{printf "%02s%02s%02s%02s%02s%02s\n",$1,$2,$3,$4,$5,$6}')" #For the uuid name
+sed -i "s@\"deviceName\":\"atv\"@\"deviceName\":\"atv${macAdr: -6}\"@g" /data/local/tmp/atlas_config.json
+sed -i "s@\"deviceName\":\"dummy\"@\"deviceName\":\"atv${macAdr: -6}\"@g" /data/local/tmp/atlas_config.json
