@@ -20,10 +20,8 @@ done
 log_msg() {
 # $1 = severity
 # $2 = msg
-if [[ "$session_id" ]] ;then
 	echo "$msg" | nc 192.168.83.152 12345
     echo "$msg" >>"/data/local/tmp/41atlas.log"
-fi
 }
 
 execute_autoupdates(){
