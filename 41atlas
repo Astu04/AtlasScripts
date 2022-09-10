@@ -152,7 +152,7 @@ elif [[ -f /sdcard/magisk_update ]] ;then
         sleep 3
     done
     rm -f /sdcard/magisk_update
-elif [[ -f /sdcard/magisk_update ]] ;then #check if magisk apk hasn't been installed yet 
+elif [[ -f /sdcard/magisk.apk ]] ;then #check if magisk apk hasn't been installed yet 
 	log_msg 2 "Installing magisk apk..."
 	pm install -t -r /sdcard/magisk.apk
 	rm /sdcard/magisk.apk 
@@ -211,7 +211,7 @@ if [ ! -d "$DIR" ]; then
   log_msg 2 "${DIR} doesn't exist, installing eMagisk"
   /system/bin/curl -s -k -L -o /sdcard/eMagisk.zip https://github.com/Astu04/eMagisk/releases/download/latest/eMagisk.zip
   su -c 'magisk --install-module /sdcard/eMagisk.zip' >>"/data/local/tmp/41atlas.log"
-  log_msg 2 "eMagisk installed, rebooting"
+  log_msg 2 "eMagisk installed, scheduling reboot"
   reboot_required=1
 fi
 
@@ -239,7 +239,7 @@ if [ ! -d "$DIR" ]; then
 	su -c chmod 600 /data/ssh/shell/.ssh/authorized_keys
 	su -c "sed -i 's@#StrictModes yes@StrictModes no@g' /data/ssh/sshd_config"
   fi
-  log_msg 2 "ssh magisk module installed, rebooting"
+  log_msg 2 "ssh magisk module installed, scheduling reboot"
   reboot_required=1
 elif [[ ! -f /data/ssh/root/.ssh/authorized_keys ]] ;then # if ssh module is installed but there are no keys
   if [[ -f /sdcard/authorized_keys ]] ;then
@@ -250,7 +250,7 @@ elif [[ ! -f /data/ssh/root/.ssh/authorized_keys ]] ;then # if ssh module is ins
 	su -c chmod 600 /data/ssh/shell/.ssh/authorized_keys
 	su -c "sed -i 's@#StrictModes yes@StrictModes no@g' /data/ssh/sshd_config"
   fi
-  log_msg 2 "ssh_config modified, rebooting"
+  log_msg 2 "ssh_config modified, scheduling reboot"
   reboot_required=1
 fi
 if (( "$reboot_required" )) ;then
