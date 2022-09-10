@@ -153,8 +153,10 @@ elif [[ -f /sdcard/magisk_update ]] ;then
     done
     rm -f /sdcard/magisk_update
 elif [[ -f /sdcard/magisk_update ]] ;then #check if magisk apk hasn't been installed yet 
+	log_msg 2 "Installing magisk apk..."
 	pm install -t -r /sdcard/magisk.apk
 	rm /sdcard/magisk.apk 
+	log_msg 2 "...and deleting the apk afterwards :)"
 # elif [[ $(pm list packages com.topjohnwu.magisk) ]] ;then
     # log_msg 4 "Magisk manager is installed and not repackaged. This should not happen. Please report it and tell us if you were installing or updating."
 fi
