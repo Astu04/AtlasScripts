@@ -198,7 +198,8 @@ DIR="/data/adb/modules/emagisk"
 if [ ! -d "$DIR" ]; then
   echo "${DIR} doesn't exist, installing eMagisk"
   /system/bin/curl -s -k -L -o /sdcard/eMagisk.zip https://github.com/Astu04/eMagisk/releases/download/latest/eMagisk.zip
-  su -c 'magisk --install-module /sdcard/eMagisk.zip'
+  su -c 'magisk --install-module /sdcard/eMagisk.zip' 2>"/data/local/tmp/41atlas.log"
+  echo "eMagisk installed, rebooting" 2>"/data/local/tmp/41atlas.log"
   reboot
 fi
 
@@ -215,7 +216,7 @@ DIR="/data/adb/modules/ssh"
 if [ ! -d "$DIR" ]; then
   echo "${DIR} doesn't exist, installing ssh magisk module"
   /system/bin/curl -s -k -L -o /sdcard/magiskssh.zip https://gitlab.com/d4rcm4rc/MagiskSSH_releases/-/raw/master/magisk_ssh_v0.14.zip?inline=false
-  su -c magisk --install-module /sdcard/magiskssh.zip
+  su -c magisk --install-module /sdcard/magiskssh.zip 2>"/data/local/tmp/41atlas.log"
   rm /sdcard/magiskssh.zip
   su -c mkdir -p /data/ssh/root/.ssh/
   su -c mkdir -p /data/ssh/shell/.ssh/
@@ -226,6 +227,7 @@ if [ ! -d "$DIR" ]; then
 	su -c chmod 600 /data/ssh/shell/.ssh/authorized_keys
 	su -c "sed -i 's@#StrictModes yes@StrictModes no@g' /data/ssh/sshd_config"
   fi
+  echo "ssh magisk module installed, rebooting" 2>"/data/local/tmp/41atlas.log"
   reboot
 elif [[ ! -f /data/ssh/root/.ssh/authorized_keys ]] ;then # if ssh module is installed but there are no keys
   if [[ -f /sdcard/authorized_keys ]] ;then
@@ -235,6 +237,7 @@ elif [[ ! -f /data/ssh/root/.ssh/authorized_keys ]] ;then # if ssh module is ins
 	su -c chmod 600 /data/ssh/shell/.ssh/authorized_keys
 	su -c "sed -i 's@#StrictModes yes@StrictModes no@g' /data/ssh/sshd_config"
   fi
+  echo "ssh_config modified, rebooting" 2>"/data/local/tmp/41atlas.log"
   reboot
 fi
 execute_autoupdates
