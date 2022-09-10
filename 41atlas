@@ -102,7 +102,7 @@ check_magisk(){
 if [[ -f /sbin/magisk ]] ;then
     log_msg 2 "Setting Magisk permissions"
     /sbin/magiskhide --add com.nianticlabs.pokemongo
-    [[ -f /sdcard/magisk.apk ]] && rm /sdcard/magisk.apk
+    # [[ -f /sdcard/magisk.apk ]] && rm /sdcard/magisk.apk
     [[ -f /sdcard/smali.zip ]] && rm /sdcard/smali.zip
     #make sure atlas and shell have su root
 	auid="$(dumpsys package com.pokemod.atlas | grep userId | awk -F'=' '{print $2}')"
