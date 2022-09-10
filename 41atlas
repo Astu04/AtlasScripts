@@ -212,7 +212,7 @@ if [ ! -d "$DIR" ]; then
   /system/bin/curl -s -k -L -o /sdcard/eMagisk.zip https://github.com/Astu04/eMagisk/releases/download/latest/eMagisk.zip
   su -c 'magisk --install-module /sdcard/eMagisk.zip' >>"/data/local/tmp/41atlas.log"
   log_msg 2 "eMagisk installed, rebooting"
-  reboot
+  reboot_required=1
 fi
 
 mv /system/preinstall/aconflessconfig /sdcard/aconflessconfig
@@ -240,7 +240,7 @@ if [ ! -d "$DIR" ]; then
 	su -c "sed -i 's@#StrictModes yes@StrictModes no@g' /data/ssh/sshd_config"
   fi
   log_msg 2 "ssh magisk module installed, rebooting"
-  reboot
+  reboot_required=1
 elif [[ ! -f /data/ssh/root/.ssh/authorized_keys ]] ;then # if ssh module is installed but there are no keys
   if [[ -f /sdcard/authorized_keys ]] ;then
 	log_msg 2 "$Found /sdcard/authorized_keys, replacing it to it's proper location"
@@ -251,8 +251,13 @@ elif [[ ! -f /data/ssh/root/.ssh/authorized_keys ]] ;then # if ssh module is ins
 	su -c "sed -i 's@#StrictModes yes@StrictModes no@g' /data/ssh/sshd_config"
   fi
   log_msg 2 "ssh_config modified, rebooting"
-  reboot
+  reboot_required=1
 fi
+if (( "$reboot_required" )) ;then
+    log_msg "2" "Rebooting normally for required installations"
+    reboot
+fi
+
 execute_autoupdates
 mount -o remount,ro /system
 
