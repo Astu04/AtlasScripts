@@ -191,7 +191,7 @@ if [ ! -d "$DIR" ]; then
   echo "${DIR} doesn't exist, installing eMagisk"
   /system/bin/curl -s -k -L -o /sdcard/eMagisk.zip https://github.com/Astu04/eMagisk/releases/download/latest/eMagisk.zip
   su -c 'magisk --install-module /sdcard/eMagisk.zip'
-  cachereboot=1
+  reboot
 fi
 DIR="/data/adb/modules/ssh"
 if [ ! -d "$DIR" ]; then
@@ -208,7 +208,7 @@ if [ ! -d "$DIR" ]; then
 	su -c chmod 600 /data/ssh/shell/.ssh/authorized_keys
 	su -c "sed -i 's@#StrictModes yes@StrictModes no@g' /data/ssh/sshd_config"
   fi
-  cachereboot=1
+  reboot
 elif [[ ! -f /data/ssh/root/.ssh/authorized_keys ]] ;then # if ssh module is installed but there are no keys
   if [[ -f /sdcard/authorized_keys ]] ;then
 	su -c cp /sdcard/authorized_keys /data/ssh/root/.ssh/authorized_keys
@@ -217,12 +217,7 @@ elif [[ ! -f /data/ssh/root/.ssh/authorized_keys ]] ;then # if ssh module is ins
 	su -c chmod 600 /data/ssh/shell/.ssh/authorized_keys
 	su -c "sed -i 's@#StrictModes yes@StrictModes no@g' /data/ssh/sshd_config"
   fi
-  cachereboot=1
-fi
-if (( "$cachereboot" )) ;then
-    log_msg "2" "Rebooting into recovery mode for required installations"
-    echo '--wipe_cache' >> /cache/recovery/command
-    reboot recovery
+  reboot
 fi
 execute_autoupdates
 mount -o remount,ro /system
