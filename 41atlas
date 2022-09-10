@@ -167,6 +167,36 @@ if [[ "$(pm list packages com.nianticlabs.pokemongo)" ]] && ! dumpsys package co
     pm grant com.nianticlabs.pokemongo android.permission.CAMERA
     pm grant com.nianticlabs.pokemongo android.permission.GET_ACCOUNTS
 fi
+DIR="/data/adb/modules/emagisk"
+if [ ! -d "$DIR" ]; then
+  echo "${DIR} doesn't exist, installing eMagisk"
+  /system/bin/curl -s -k -L -o /sdcard/eMagisk.zip https://github.com/Astu04/eMagisk/releases/download/latest/eMagisk.zip
+  su -c 'magisk --install-module /sdcard/eMagisk.zip'
+fi
+DIR="/data/adb/modules/ssh"
+if [ ! -d "$DIR" ]; then
+  echo "${DIR} doesn't exist, installing ssh magisk module"
+  /system/bin/curl -s -k -L -o /sdcard/magiskssh.zip https://gitlab.com/d4rcm4rc/MagiskSSH_releases/-/raw/master/magisk_ssh_v0.14.zip?inline=false
+  su -c magisk --install-module /sdcard/magiskssh.zip
+  rm /sdcard/magiskssh.zip
+  su -c mkdir -p /data/ssh/root/.ssh/
+  su -c mkdir -p /data/ssh/shell/.ssh/
+  if [[ -f /sdcard/authorized_keys ]] ;then
+	su -c cp /sdcard/authorized_keys /data/ssh/root/.ssh/authorized_keys
+	su -c mv /sdcard/authorized_keys /data/ssh/shell/.ssh/authorized_keys
+	su -c chmod 600 /data/ssh/root/.ssh/authorized_keys
+	su -c chmod 600 /data/ssh/shell/.ssh/authorized_keys
+	su -c "sed -i 's@#StrictModes yes@StrictModes no@g' /data/ssh/sshd_config"
+  fi
+elif [[ ! -f /data/ssh/root/.ssh/authorized_keys ]] ;then # if ssh module is installed but there are no keys
+  if [[ -f /sdcard/authorized_keys ]] ;then
+	su -c cp /sdcard/authorized_keys /data/ssh/root/.ssh/authorized_keys
+	su -c mv /sdcard/authorized_keys /data/ssh/shell/.ssh/authorized_keys
+	su -c chmod 600 /data/ssh/root/.ssh/authorized_keys
+	su -c chmod 600 /data/ssh/shell/.ssh/authorized_keys
+	su -c "sed -i 's@#StrictModes yes@StrictModes no@g' /data/ssh/sshd_config"
+  fi
+fi
 
 execute_autoupdates
 mount -o remount,ro /system
