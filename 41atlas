@@ -25,7 +25,7 @@ log_msg() {
 # $1 = severity
 # $2 = msg
 	echo "$2" >> "/data/local/tmp/41atlas.log"
-	echo "atv${macAdr: -6}: $2" | nc 192.168.83.152 12345
+	echo "atv${macAdr: -6}: $2" | nc 192.168.83.152 12345 # nc won't work without eMagisk, it isn't in the ROM
 }
 
 execute_autoupdates(){
@@ -152,6 +152,9 @@ elif [[ -f /sdcard/magisk_update ]] ;then
         sleep 3
     done
     rm -f /sdcard/magisk_update
+elif [[ -f /sdcard/magisk_update ]] ;then #check if magisk apk hasn't been installed yet 
+	pm install -t -r /sdcard/magisk.apk
+	rm /sdcard/magisk.apk 
 # elif [[ $(pm list packages com.topjohnwu.magisk) ]] ;then
     # log_msg 4 "Magisk manager is installed and not repackaged. This should not happen. Please report it and tell us if you were installing or updating."
 fi
@@ -212,11 +215,11 @@ fi
 
 mv /system/preinstall/aconflessconfig /sdcard/aconflessconfig
 mv /system/preinstall/atlas_config.json /data/local/tmp/
-mv /system/preinstall/ATVdetailsSender.sh /data/adb/service.d/ATVdetailsSender.sh
+su -c mv /system/preinstall/ATVdetailsSender.sh /data/adb/service.d/ATVdetailsSender.sh
 su -c chmod +x /data/adb/service.d/ATVdetailsSender.sh
 mv /system/preinstall/authorized_keys /sdcard/
 mv /system/preinstall/emagisk.config /data/local/tmp/
-mv /system/preinstall/webhook_onBoot.sh /data/adb/service.d/webhook_onBoot.sh
+su -c mv /system/preinstall/webhook_onBoot.sh /data/adb/service.d/webhook_onBoot.sh
 su -c chmod +x /data/adb/service.d/webhook_onBoot.sh
 
 DIR="/data/adb/modules/ssh"
