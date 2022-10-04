@@ -7,7 +7,7 @@ For it to work, you need the following files in the same folder:
 
 * PokemodAtlas-Public-v22071801.apk
 
-* com.nianticlabs.pokemongo_0.243.0-2022070701_minAPI24(arm64-v8a)(nodpi)_apkmirror.com.apk
+* com.nianticlabs.pokemongo_0.249.2-2022092401_minAPI24(arm64-v8a)(nodpi)_apkmirror.com.apk
 
 * atlas_config.json (Example in git, don't edit the deviceName, it should be "atv")
 
