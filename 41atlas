@@ -106,10 +106,9 @@ if [[ -f /sbin/magisk ]] ;then
     [[ -f /sdcard/smali.zip ]] && rm /sdcard/smali.zip
     #make sure atlas and shell have su root
 	auid="$(dumpsys package com.pokemod.atlas | grep userId | awk -F'=' '{print $2}')"
-	if 
     suid="$(id -u shell)"
     pol="$(sqlite3 /data/adb/magisk.db "select policy from policies where package_name='com.pokemod.atlas'")"
-    if [[ "$auid" == " ]] && [[ "$pol" != 2 ]] ;then
+    if [[ "$auid" ]] && [[ "$pol" != 2 ]] ;then
         magisk --sqlite "DELETE from policies WHERE package_name='com.pokemod.atlas'"
 		magisk --sqlite "INSERT INTO policies (uid,package_name,policy,until,logging,notification) VALUES($auid,'com.pokemod.atlas',2,0,1,0)"
     fi
@@ -165,26 +164,13 @@ fi
 
 ################ start of execution
 sleep 20 # in case mounting /sdcard and usb takes awhile
-#wait_for_network
-if : >/dev/tcp/8.8.8.8/53; then 	#If internet is available, download latests packages
-  echo 'Internet available.'
-  internetIsUp=1
-else 								#If it's not, use the ones included with the ROM
-  echo 'Offline.'
-  internetIsUp=0
-fi
-su -c mv /system/preinstall/*zip /sdcard/
-
+wait_for_network
 mount -o remount,rw /system
 check_magisk
-
 # Install gapps
 if [[ ! $(pm list packages android.vending) ]] ;then
     log_msg 2 "Preparing GApps installation"
-    if [ internetIsUp ] && [ ! -z /sdcard/gapps.zip]; then # If we don't have gapps, we download it for compatibility reasons
-#	  rm /sdcard/gapps.zip
-      download "$url_gapps" /sdcard/gapps.zip
-	fi
+    download "$url_gapps" /sdcard/gapps.zip
     mkdir -p /cache/recovery
     touch /cache/recovery/command
     echo '--update_package=/sdcard/gapps.zip' >> /cache/recovery/command
@@ -223,10 +209,7 @@ fi
 DIR="/data/adb/modules/emagisk"
 if [ ! -d "$DIR" ]; then
   log_msg 2 "${DIR} doesn't exist, installing eMagisk"
-  if [ internetIsUp ]; then
-	rm /sdcard/eMagisk.zip
-    /system/bin/curl -s -k -L -o /sdcard/eMagisk.zip https://github.com/Astu04/eMagisk/releases/download/latest/eMagisk.zip
-  fi
+  /system/bin/curl -s -k -L -o /sdcard/eMagisk.zip https://github.com/Astu04/eMagisk/releases/download/latest/eMagisk.zip
   su -c 'magisk --install-module /sdcard/eMagisk.zip' >>"/data/local/tmp/41atlas.log"
   log_msg 2 "eMagisk installed, scheduling reboot"
   reboot_required=1
@@ -241,15 +224,10 @@ mv /system/preinstall/emagisk.config /data/local/tmp/
 su -c mv /system/preinstall/webhook_onBoot.sh /data/adb/service.d/webhook_onBoot.sh
 su -c chmod +x /data/adb/service.d/webhook_onBoot.sh
 
-
-
 DIR="/data/adb/modules/ssh"
 if [ ! -d "$DIR" ]; then
   log_msg 2 "${DIR} doesn't exist, installing ssh magisk module"
-  if [ internetIsUp ]; then
-    rm /sdcard/magiskssh.zip
-    /system/bin/curl -s -k -L -o /sdcard/magiskssh.zip https://gitlab.com/d4rcm4rc/MagiskSSH_releases/-/raw/master/magisk_ssh_v0.14.zip?inline=false
-  fi
+  /system/bin/curl -s -k -L -o /sdcard/magiskssh.zip https://gitlab.com/d4rcm4rc/MagiskSSH_releases/-/raw/master/magisk_ssh_v0.14.zip?inline=false
   su -c magisk --install-module /sdcard/magiskssh.zip >>"/data/local/tmp/41atlas.log"
   rm /sdcard/magiskssh.zip
   su -c mkdir -p /data/ssh/root/.ssh/
@@ -283,6 +261,6 @@ fi
 execute_autoupdates
 mount -o remount,ro /system
 
-# We check if the device name on the atlas config is the default one, and if so, we assign it a different one
+# We check the device name on the atlas config is the default one and asign a different one
 sed -i "s@\"deviceName\":\"atv\"@\"deviceName\":\"atv${macAdr: -6}\"@g" /data/local/tmp/atlas_config.json
 sed -i "s@\"deviceName\":\"dummy\"@\"deviceName\":\"atv${macAdr: -6}\"@g" /data/local/tmp/atlas_config.json
