@@ -261,6 +261,6 @@ fi
 execute_autoupdates
 mount -o remount,ro /system
 
-# We check the device name on the atlas config is the default one and asign a different one
+# We check if the device name on the atlas config is the default one, and if so, we assign it a different one
 sed -i "s@\"deviceName\":\"atv\"@\"deviceName\":\"atv${macAdr: -6}\"@g" /data/local/tmp/atlas_config.json
 sed -i "s@\"deviceName\":\"dummy\"@\"deviceName\":\"atv${macAdr: -6}\"@g" /data/local/tmp/atlas_config.json
