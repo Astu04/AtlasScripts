@@ -186,7 +186,7 @@ force_atlas_service_restart() {
     am force-stop $ATLASPKG
     sleep 5
     am startservice $ATLASPKG/com.pokemod.atlas.services.MappingService
-    log "Services were restarted!"
+    log_msg 2 "Services were restarted!"
 }
 
 ################ start of execution
