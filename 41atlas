@@ -180,7 +180,7 @@ check_beta() {
 }
 # Stops Atlas and Pogo and restarts Atlas MappingService
 
-force_restart() {
+force_atlas_service_restart() {
     am stopservice $ATLASPKG/com.pokemod.atlas.services.MappingService
     am force-stop $POGOPKG
     am force-stop $ATLASPKG
@@ -307,4 +307,4 @@ else
 	sed -i "s@\"deviceName\":\"dummy\"@\"deviceName\":\"atv${macAdr: -6}\"@g" /data/local/tmp/atlas_config.json
 fi
 
-force_restart
+force_atlas_service_restart
