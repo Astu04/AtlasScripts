@@ -108,7 +108,7 @@ if [[ -f /sbin/magisk ]] ;then
 		$atlasPackageName = $atlasPackageName.beta
 	fi
     #make sure atlas and shell have su root
-	auid="$(dumpsys package $atlasPackageName | grep userId | awk -F'=' '{print $2}')"
+    auid="$(dumpsys package $atlasPackageName | grep userId | awk -F'=' '{print $2}')"
     suid="$(id -u shell)"
     pol="$(sqlite3 /data/adb/magisk.db "select policy from policies where package_name='$atlasPackageName'")"
     if [[ "$auid" ]] && [[ "$pol" != 2 ]] ;then
@@ -167,9 +167,13 @@ fi
 
 ################ start of execution
 sleep 20 # in case mounting /sdcard and usb takes awhile
+log_msg 2 "Checking network"
 wait_for_network
+log_msg 2 "Got network, starting script"
 mount -o remount,rw /system
+log_msg 2 "Checking magisk"
 check_magisk
+log_msg 2 "Checking gapps"
 # Install gapps
 if [[ ! $(pm list packages android.vending) ]] ;then
     log_msg 2 "Preparing GApps installation"
