@@ -5,6 +5,7 @@ url_gapps="https://madatv.b-cdn.net/open_gapps-arm64-7.1-pico-20200715.zip"
 useragent='Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:53.0) Gecko/20100101 Firefox/53.0'
 ip="$(ifconfig 'eth0'|awk '/inet addr/{print $2}'|cut -d ':' -f 2)"
 atlasPackageName="com.pokemod.atlas"
+POGOPKG=com.nianticlabs.pokemongo
 reboot_required=0
 cachereboot=0
 
@@ -165,6 +166,29 @@ elif [[ -f /sdcard/magisk.apk ]] ;then #check if magisk apk hasn't been installe
 fi
 }
 
+check_beta() {    
+    if [ "$(pm list packages com.pokemod.atlas.beta)" = "package:com.pokemod.atlas.beta" ]; then
+        log "Found Atlas developer version!"
+        ATLASPKG=com.pokemod.atlas.beta
+    elif [ "$(pm list packages com.pokemod.atlas)" = "package:com.pokemod.atlas" ]; then
+        log "Found Atlas production version!"
+        ATLASPKG=com.pokemod.atlas
+    else
+        log "No Atlas installed. Abort!"
+        exit 1
+    fi
+}
+# Stops Atlas and Pogo and restarts Atlas MappingService
+
+force_restart() {
+    am stopservice $ATLASPKG/com.pokemod.atlas.services.MappingService
+    am force-stop $POGOPKG
+    am force-stop $ATLASPKG
+    sleep 5
+    am startservice $ATLASPKG/com.pokemod.atlas.services.MappingService
+    log "Services were restarted!"
+}
+
 ################ start of execution
 sleep 20 # in case mounting /sdcard and usb takes awhile
 log_msg 2 "Checking network"
@@ -197,6 +221,8 @@ if [[ -z "$(pm list packages com.pokemod.atlas)" ]] || [[ -z "$(pm list packages
 	rm /system/preinstall/PokemodAtlas*apk
 	log_msg 2 "Atlas installed"
 fi
+# Adjust the script depending on Atlas production or beta
+check_beta
 if [[ -z "$(pm list packages com.nianticlabs.pokemongo)" ]]; then 
 	log_msg 2 "Pogo isn't installed, starting install"
     pm install -r /system/preinstall/com.nianticlabs.pokemongo*apk
@@ -280,3 +306,5 @@ then
 else
 	sed -i "s@\"deviceName\":\"dummy\"@\"deviceName\":\"atv${macAdr: -6}\"@g" /data/local/tmp/atlas_config.json
 fi
+
+force_restart
