@@ -25,7 +25,6 @@ log_msg() {
 # $1 = severity
 # $2 = msg
 	echo "$2" >> "/data/local/tmp/41atlas.log"
-	echo "atv${macAdr: -6}: $2" | nc 192.168.83.152 12345 # nc won't work without eMagisk, it isn't in the ROM
 }
 
 execute_autoupdates(){
