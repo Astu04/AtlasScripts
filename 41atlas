@@ -4,7 +4,7 @@ url_magisk="https://github.com/topjohnwu/Magisk/releases/download/v$magisk_ver/M
 url_gapps="https://madatv.b-cdn.net/open_gapps-arm64-7.1-pico-20200715.zip"
 useragent='Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:53.0) Gecko/20100101 Firefox/53.0'
 ip="$(ifconfig 'eth0'|awk '/inet addr/{print $2}'|cut -d ':' -f 2)"
-atlasPackageName = "com.pokemod.atlas"
+atlasPackageName="com.pokemod.atlas"
 reboot_required=0
 cachereboot=0
 
