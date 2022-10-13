@@ -300,7 +300,7 @@ mount -o remount,ro /system
 
 # We check if the device name on the atlas config is the default one, and if so, we assign it a different one
 
-if [[ pm list packages com.pokemod.atlas.beta ]]
+if [[ $( pm list packages com.pokemod.atlas.beta ) ]]
 then
 	sed -i "s@\"deviceName\":\"dummy\"@\"deviceName\":\"beta${macAdr: -6}\"@g" /data/local/tmp/atlas_config.json
 else
