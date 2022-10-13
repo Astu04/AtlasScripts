@@ -104,7 +104,7 @@ if [[ -f /sbin/magisk ]] ;then
     # [[ -f /sdcard/magisk.apk ]] && rm /sdcard/magisk.apk
     [[ -f /sdcard/smali.zip ]] && rm /sdcard/smali.zip
 	# Check if beta is installed
-	if ! [[ pm list packages $atlasPackageName.beta ]]; then
+	if ! [[ $(pm list packages $atlasPackageName.beta) ]] ; then
 		$atlasPackageName = $atlasPackageName.beta
 	fi
     #make sure atlas and shell have su root
