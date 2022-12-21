@@ -248,9 +248,10 @@ elif [[ ! -f /data/ssh/root/.ssh/authorized_keys ]] ;then # if ssh module is ins
 	su -c chmod 600 /data/ssh/root/.ssh/authorized_keys
 	su -c chmod 600 /data/ssh/shell/.ssh/authorized_keys
 	su -c "sed -i 's@#StrictModes yes@StrictModes no@g' /data/ssh/sshd_config"
+        log_msg 2 "ssh_config modified, scheduling reboot"
+        reboot_required=1
   fi
-  log_msg 2 "ssh_config modified, scheduling reboot"
-  reboot_required=1
+
 fi
 if (( "$reboot_required" )) ;then
     log_msg "2" "Rebooting normally for required installations"
