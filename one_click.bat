@@ -3,7 +3,7 @@ adb tcpip 5555
 for /F "tokens=*" %%A in (DeviceIP.txt) do (
 	adb connect %%A
 	adb -s %%A install -r "PokemodAtlas-Public-v22071801.apk"
-	adb -s %%A install -r "com.nianticlabs.pokemongo_0.249.2-2022092401_minAPI24(arm64-v8a)(nodpi)_apkmirror.com.apk"
+	adb -s %%A install -r "com.nianticlabs.pokemongo_0.263.1-2023022801_minAPI24(arm64-v8a)(nodpi)_apkmirror.com.apk"
 	adb -s %%A push atlas_config.json /data/local/tmp/atlas_config.json
 	adb -s %%A push emagisk.config /data/local/tmp/emagisk.config
 	if exist authorized_keys (
