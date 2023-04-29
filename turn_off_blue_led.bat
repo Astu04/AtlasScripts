@@ -1,3 +1,4 @@
+REM Actually, this turns it from blue to red. You can't turn the LED off via software
 @echo off
 adb tcpip 5555
 for /F "tokens=*" %%A in (DeviceIP.txt) do (
