@@ -296,6 +296,7 @@ if (( "$reboot_required" )) ;then
 fi
 
 execute_autoupdates
+echo "net.hostname=atv\${macAdr: -6}" >> /system/build.prop
 mount -o remount,ro /system
 
 # We check if the device name on the atlas config is the default one, and if so, we assign it a different one
