@@ -4,7 +4,8 @@ url_magisk="https://github.com/topjohnwu/Magisk/releases/download/v$magisk_ver/M
 url_gapps="https://madatv.b-cdn.net/open_gapps-arm64-7.1-pico-20200715.zip"
 useragent='Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:53.0) Gecko/20100101 Firefox/53.0'
 ip="$(ifconfig 'eth0'|awk '/inet addr/{print $2}'|cut -d ':' -f 2)"
-
+atlasPackageName="com.pokemod.atlas"
+POGOPKG=com.nianticlabs.pokemongo
 reboot_required=0
 cachereboot=0
 
@@ -103,13 +104,17 @@ if [[ -f /sbin/magisk ]] ;then
     /sbin/magiskhide --add com.nianticlabs.pokemongo
     # [[ -f /sdcard/magisk.apk ]] && rm /sdcard/magisk.apk
     [[ -f /sdcard/smali.zip ]] && rm /sdcard/smali.zip
+	# Check if beta is installed
+	if ! [[ $(pm list packages $atlasPackageName.beta) ]] ; then
+		$atlasPackageName = $atlasPackageName.beta
+	fi
     #make sure atlas and shell have su root
-	auid="$(dumpsys package com.pokemod.atlas | grep userId | awk -F'=' '{print $2}')"
+    auid="$(dumpsys package $atlasPackageName | grep userId | awk -F'=' '{print $2}')"
     suid="$(id -u shell)"
-    pol="$(sqlite3 /data/adb/magisk.db "select policy from policies where package_name='com.pokemod.atlas'")"
+    pol="$(sqlite3 /data/adb/magisk.db "select policy from policies where package_name='$atlasPackageName'")"
     if [[ "$auid" ]] && [[ "$pol" != 2 ]] ;then
-        magisk --sqlite "DELETE from policies WHERE package_name='com.pokemod.atlas'"
-		magisk --sqlite "INSERT INTO policies (uid,package_name,policy,until,logging,notification) VALUES($auid,'com.pokemod.atlas',2,0,1,0)"
+        magisk --sqlite "DELETE from policies WHERE package_name='$atlasPackageName'"
+		magisk --sqlite "INSERT INTO policies (uid,package_name,policy,until,logging,notification) VALUES($auid,'$atlasPackageName',2,0,1,0)"
     fi
     pol="$(sqlite3 /data/adb/magisk.db "select policy from policies where package_name='com.android.shell'")"
     if [[ "$suid" ]] && [[ "$pol" != 2 ]] ;then
@@ -161,11 +166,38 @@ elif [[ -f /sdcard/magisk.apk ]] ;then #check if magisk apk hasn't been installe
 fi
 }
 
+check_beta() {    
+    if [ "$(pm list packages com.pokemod.atlas.beta)" = "package:com.pokemod.atlas.beta" ]; then
+        log "Found Atlas developer version!"
+        ATLASPKG=com.pokemod.atlas.beta
+    elif [ "$(pm list packages com.pokemod.atlas)" = "package:com.pokemod.atlas" ]; then
+        log "Found Atlas production version!"
+        ATLASPKG=com.pokemod.atlas
+    else
+        log "No Atlas installed. Abort!"
+        exit 1
+    fi
+}
+# Stops Atlas and Pogo and restarts Atlas MappingService
+
+force_atlas_service_restart() {
+    am stopservice $ATLASPKG/com.pokemod.atlas.services.MappingService
+    am force-stop $POGOPKG
+    am force-stop $ATLASPKG
+    sleep 5
+    am startservice $ATLASPKG/com.pokemod.atlas.services.MappingService
+    log_msg 2 "Services were restarted!"
+}
+
 ################ start of execution
 sleep 20 # in case mounting /sdcard and usb takes awhile
+log_msg 2 "Checking network"
 wait_for_network
+log_msg 2 "Got network, starting script"
 mount -o remount,rw /system
+log_msg 2 "Checking magisk"
 check_magisk
+log_msg 2 "Checking gapps"
 # Install gapps
 if [[ ! $(pm list packages android.vending) ]] ;then
     log_msg 2 "Preparing GApps installation"
@@ -183,12 +215,14 @@ if (( "$cachereboot" )) ;then
     echo '--wipe_cache' >> /cache/recovery/command
     reboot recovery
 fi
-if [[ -z "$(pm list packages com.pokemod.atlas)" ]]; then 
+if [[ -z "$(pm list packages com.pokemod.atlas)" ]] || [[ -z "$(pm list packages com.pokemod.atlas.beta)" ]]; then 
 	log_msg 2 "Atlas isn't installed, starting install"
     pm install -r /system/preinstall/PokemodAtlas*apk
 	rm /system/preinstall/PokemodAtlas*apk
 	log_msg 2 "Atlas installed"
 fi
+# Adjust the script depending on Atlas production or beta
+check_beta
 if [[ -z "$(pm list packages com.nianticlabs.pokemongo)" ]]; then 
 	log_msg 2 "Pogo isn't installed, starting install"
     pm install -r /system/preinstall/com.nianticlabs.pokemongo*apk
@@ -198,6 +232,10 @@ fi
 if [[ "$(pm list packages com.pokemod.atlas)" ]] && ! dumpsys package com.pokemod.atlas |grep READ_EXTERNAL_STORAGE|grep granted|grep -q 'granted=true'; then
 	pm grant com.pokemod.atlas android.permission.READ_EXTERNAL_STORAGE
 	pm grant com.pokemod.atlas android.permission.WRITE_EXTERNAL_STORAGE
+fi
+if [[ "$(pm list packages com.pokemod.atlas.beta)" ]] && ! dumpsys package com.pokemod.atlas.beta |grep READ_EXTERNAL_STORAGE|grep granted|grep -q 'granted=true'; then
+	pm grant com.pokemod.atlas.beta android.permission.READ_EXTERNAL_STORAGE
+	pm grant com.pokemod.atlas.beta android.permission.WRITE_EXTERNAL_STORAGE
 fi
 if [[ "$(pm list packages com.nianticlabs.pokemongo)" ]] && ! dumpsys package com.nianticlabs.pokemongo|grep ACCESS_FINE_LOCATION|grep granted|grep -q 'granted=true'; then
     pm grant com.nianticlabs.pokemongo android.permission.ACCESS_FINE_LOCATION
@@ -259,8 +297,16 @@ if (( "$reboot_required" )) ;then
 fi
 
 execute_autoupdates
+echo "net.hostname=atv\${macAdr: -6}" >> /system/build.prop
 mount -o remount,ro /system
 
 # We check if the device name on the atlas config is the default one, and if so, we assign it a different one
-sed -i "s@\"deviceName\":\"atv\"@\"deviceName\":\"atv${macAdr: -6}\"@g" /data/local/tmp/atlas_config.json
-sed -i "s@\"deviceName\":\"dummy\"@\"deviceName\":\"atv${macAdr: -6}\"@g" /data/local/tmp/atlas_config.json
+
+if [[ $( pm list packages com.pokemod.atlas.beta ) ]]
+then
+	sed -i "s@\"deviceName\":\"dummy\"@\"deviceName\":\"beta${macAdr: -6}\"@g" /data/local/tmp/atlas_config.json
+else
+	sed -i "s@\"deviceName\":\"dummy\"@\"deviceName\":\"atv${macAdr: -6}\"@g" /data/local/tmp/atlas_config.json
+fi
+
+force_atlas_service_restart
